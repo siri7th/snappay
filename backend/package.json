@@ -4,10 +4,10 @@
   "description": "SnapPay Family Payment Platform - Backend API",
   "main": "dist/server.js",
   "scripts": {
-    "start": "node dist/server.js",
-    "dev": "cross-env NODE_ENV=development nodemon src/server.ts",
-    "dev:debug": "cross-env NODE_ENV=development nodemon --inspect src/server.ts",
     "build": "tsc",
+    "start": "node dist/server.js",
+    "dev:debug": "cross-env NODE_ENV=development nodemon --inspect src/server.ts",
+    "dev": "ts-node src/server.ts",
     "build:clean": "rimraf dist && tsc",
     "build:watch": "tsc --watch",
     "prod": "cross-env NODE_ENV=production node dist/server.js",

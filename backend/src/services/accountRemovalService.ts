@@ -36,7 +36,7 @@ export class AccountRemovalService {
     // Start transaction
     const result = await prisma.$transaction(async (tx) => {
       // Check if linked user has wallet balance
-      if (familyMember.linked.wallet && familyMember.linked.wallet.balance > 0) {
+      if (familyMember.linked.wallet && familyMember.linked.wallet.balance.gt(0)) {
         const linkedBalance = Number(familyMember.linked.wallet.balance);
 
         if (transferBalance && linkedBalance > 0) {
@@ -143,7 +143,7 @@ export class AccountRemovalService {
     // Start transaction
     const result = await prisma.$transaction(async (tx) => {
       // Check if linked user has wallet balance
-      if (familyMember.linked.wallet && familyMember.linked.wallet.balance > 0) {
+      if (familyMember.linked.wallet && familyMember.linked.wallet.balance.gt(0)) {
         const linkedBalance = Number(familyMember.linked.wallet.balance);
 
         if (transferBalance && linkedBalance > 0) {

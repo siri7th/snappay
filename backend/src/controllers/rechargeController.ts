@@ -7,6 +7,7 @@ import notificationService from '../services/notificationService';
 import { RECHARGE_TYPES, TRANSACTION_TYPES, TRANSACTION_STATUS, PAYMENT_METHODS, LIMITS } from '../utils/constants';
 import { generateTxnId } from '../utils/helpers';
 import authService from '../services/authService';
+import { Prisma } from "@prisma/client";
 
 // Define types for plans
 interface Plan {
@@ -304,7 +305,7 @@ class RechargeController {
         where: { id: member.id },
         data: { dailySpent: 0, lastResetDate: today },
       });
-      member.dailySpent = 0;
+      member.dailySpent = new Prisma.Decimal(0);
     }
 
     // Reset monthly if new month
@@ -313,7 +314,7 @@ class RechargeController {
         where: { id: member.id },
         data: { monthlySpent: 0, lastResetDate: today },
       });
-      member.monthlySpent = 0;
+      member.monthlySpent = new Prisma.Decimal(0);
     }
 
     // Check limits

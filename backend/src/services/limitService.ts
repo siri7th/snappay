@@ -1,4 +1,5 @@
 // services/limitService.ts
+import { Prisma } from '@prisma/client';
 import prisma from '../config/database';
 import { AppError } from '../middleware/errorHandler';
 import { getStartOfDay, getStartOfMonth } from '../utils/helpers';
@@ -20,8 +21,10 @@ export class LimitService {
     const today = getStartOfDay();
     const firstDayOfMonth = getStartOfMonth();
 
-    // Reset daily if new day
-    if (member.lastResetDate < today) {
+    const shouldResetDaily = member.lastResetDate < today;
+    const shouldResetMonthly = member.lastResetDate < firstDayOfMonth;
+
+    if (shouldResetDaily) {
       await prisma.familyMember.update({
         where: { id: member.id },
         data: {
@@ -29,27 +32,32 @@ export class LimitService {
           lastResetDate: today,
         },
       });
-      member.dailySpent = 0;
     }
 
-    // Reset monthly if new month (only if lastResetDate is before this month)
-    if (member.lastResetDate < firstDayOfMonth) {
+    if (shouldResetMonthly) {
       await prisma.familyMember.update({
         where: { id: member.id },
         data: {
           monthlySpent: 0,
-          lastResetDate: today, // Update to today to avoid repeated resets
+          lastResetDate: today,
         },
       });
-      member.monthlySpent = 0;
     }
 
-    // Check limits
-    if (Number(member.dailySpent) + amount > Number(member.dailyLimit)) {
-      throw new AppError(`Daily limit of ₹${member.dailyLimit} exceeded. Used: ₹${member.dailySpent}`, 400);
+    const currentDailySpent = shouldResetDaily ? 0 : Number(member.dailySpent);
+    const currentMonthlySpent = shouldResetMonthly ? 0 : Number(member.monthlySpent);
+
+    if (currentDailySpent + amount > Number(member.dailyLimit)) {
+      throw new AppError(
+        `Daily limit of ₹${member.dailyLimit} exceeded. Used: ₹${currentDailySpent}`,
+        400,
+      );
     }
-    if (Number(member.monthlySpent) + amount > Number(member.monthlyLimit)) {
-      throw new AppError(`Monthly limit of ₹${member.monthlyLimit} exceeded. Used: ₹${member.monthlySpent}`, 400);
+    if (currentMonthlySpent + amount > Number(member.monthlyLimit)) {
+      throw new AppError(
+        `Monthly limit of ₹${member.monthlyLimit} exceeded. Used: ₹${currentMonthlySpent}`,
+        400,
+      );
     }
     if (amount > Number(member.perTransactionLimit)) {
       throw new AppError(`Per transaction limit is ₹${member.perTransactionLimit}`, 400);
