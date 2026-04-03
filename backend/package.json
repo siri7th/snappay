@@ -29,7 +29,7 @@
     "docker:build": "docker build -t snappay-backend .",
     "docker:run": "docker run -p 5000:5000 snappay-backend",
     "docker:compose": "docker-compose up -d",
-    "prepare": "husky install",
+    "prepare": "echo 'skip husky on render'",
     "postinstall": "prisma generate"
   },
   "dependencies": {
