@@ -21,7 +21,7 @@
       "@types/*": ["src/types/*"]
     },
     "resolveJsonModule": true,
-    "types": ["node", "express"],
+    "types": ["node"],
     "allowJs": false,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
