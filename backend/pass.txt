@@ -1,0 +1,3 @@
+snappaybymonu
+
+postgresql://postgres:snappaybymonu@db.xxxxx.supabase.co:5432/postgres
