@@ -9,7 +9,7 @@ let socket: Socket | null = null;
 export const initializeSocket = (token: string) => {
   if (socket) return socket;
   
-  socket = io(import.meta.env.VITE_SOCKET_URL || 'http://localhost:5000', {
+  socket = io(import.meta.env.VITE_SOCKET_URL || 'https://snappay-backend.onrender.com', {
     auth: { token },
     transports: ['websocket', 'polling'],
     reconnection: true,

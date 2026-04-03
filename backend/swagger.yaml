@@ -7,7 +7,7 @@ info:
     name: SnapPay Support
     email: support@snappay.com
 servers:
-  - url: http://localhost:5000/api
+  - url: https://snappay-backend.onrender.com/api
     description: Development server
   - url: https://api.snappay.com/api
     description: Production server

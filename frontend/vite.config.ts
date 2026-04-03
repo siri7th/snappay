@@ -53,7 +53,7 @@ export default defineConfig(({ mode }) => {
       },
       proxy: {
         '/api': {
-          target: env.VITE_API_URL || 'http://localhost:5000',
+          target: env.VITE_API_URL || 'https://snappay-backend.onrender.com',
           changeOrigin: true,
           secure: false,
           // 🔥 FIXED: Keep /api prefix (remove rewrite)
@@ -95,7 +95,7 @@ export default defineConfig(({ mode }) => {
       __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
       __DEV__: isDev,
       __PROD__: isProd,
-      __API_URL__: JSON.stringify(env.VITE_API_URL || 'http://localhost:5000'),
+      __API_URL__: JSON.stringify(env.VITE_API_URL || 'https://snappay-backend.onrender.com'),
     },
 
     optimizeDeps: {

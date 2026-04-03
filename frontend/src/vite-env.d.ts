@@ -6,7 +6,7 @@
  * Extend this interface to add type safety for your import.meta.env variables
  */
 interface ImportMetaEnv {
-  /** Backend API URL (e.g., http://localhost:5000/api) */
+  /** Backend API URL (e.g., https://snappay-backend.onrender.com/api) */
   readonly VITE_API_URL: string;
   
   /** WebSocket server URL for real-time features */

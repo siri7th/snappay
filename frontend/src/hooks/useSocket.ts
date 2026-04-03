@@ -127,7 +127,7 @@ export const useSocket = (options: UseSocketOptions = {}) => {
     const token = localStorage.getItem('token');
     const socketUrl = import.meta.env.VITE_SOCKET_URL || 
                      import.meta.env.VITE_API_URL?.replace('/api', '') || 
-                     'http://localhost:5000';
+                     'https://snappay-backend.onrender.com';
 
     const newSocket = io(socketUrl, {
       auth: { token },
