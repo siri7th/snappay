@@ -21,7 +21,7 @@ const CONFIG = {
   ENABLE_CACHE_BUSTING: true,
   MAX_RETRY_ATTEMPTS: 1,
   TIMEOUT: 30000,
-  DEFAULT_PORT: '5001',
+  DEFAULT_PORT: '5000',
 } as const;
 
 // ===== STORAGE KEYS (aligned with constants) =====

@@ -1,9 +1,9 @@
-// src/services/api/auth.ts
+// src/services/api/auth.ts - COMPLETE FIXED VERSION
 import apiClient from './client';
 
 export interface SendOTPRequest {
   phone: string;
-  userType?: 'primary' | 'linked';  // Add userType
+  userType?: 'primary' | 'linked';
   mode?: 'login' | 'signup';
 }
 
@@ -53,54 +53,14 @@ export interface RefreshTokenRequest {
 }
 
 export const authAPI = {
-  /**
-   * Send OTP to phone number
-   * @param data - Phone number and optional user type (primary/linked)
-   */
-  sendOTP: (data: SendOTPRequest) => apiClient.post('/auth/send-otp', data),
-
-  /**
-   * Verify OTP and login/register
-   */
-  verifyOTP: (data: VerifyOTPRequest) => apiClient.post('/auth/verify-otp', data),
-
-  /**
-   * Get current user profile
-   */
-  getMe: () => apiClient.get('/auth/me'),
-
-  /**
-   * Update user profile
-   */
-  updateProfile: (data: UpdateProfileRequest) => apiClient.put('/auth/profile', data),
-
-  /**
-   * Change PIN (aligned with backend - oldPin/newPin)
-   */
-  changePin: (data: ChangePinRequest) => apiClient.put('/auth/change-pin', data),
-
-  /**
-   * Set PIN (first time)
-   */
-  setPin: (data: SetPinRequest) => apiClient.put('/auth/set-pin', data),
-
-  /**
-   * Forgot PIN - send OTP
-   */
-  forgotPinSendOtp: (data: ForgotPinSendOtpRequest) => apiClient.post('/auth/forgot-pin/send-otp', data),
-
-  /**
-   * Forgot PIN - verify OTP and set new PIN
-   */
-  forgotPinVerify: (data: ForgotPinVerifyRequest) => apiClient.post('/auth/forgot-pin/verify', data),
-
-  /**
-   * Logout user
-   */
-  logout: () => apiClient.post('/auth/logout'),
-
-  /**
-   * Refresh access token
-   */
-  refreshToken: (refreshToken: string) => apiClient.post('/auth/refresh', { refreshToken }),
+  sendOTP: (data: SendOTPRequest) => apiClient.post('/api/auth/send-otp', data),  // ✅ Fixed
+  verifyOTP: (data: VerifyOTPRequest) => apiClient.post('/api/auth/verify-otp', data),  // ✅ Fixed
+  getMe: () => apiClient.get('/api/auth/me'),  // ✅ Fixed
+  updateProfile: (data: UpdateProfileRequest) => apiClient.put('/api/auth/profile', data),  // ✅ Fixed
+  changePin: (data: ChangePinRequest) => apiClient.put('/api/auth/change-pin', data),  // ✅ Fixed
+  setPin: (data: SetPinRequest) => apiClient.put('/api/auth/set-pin', data),  // ✅ Fixed
+  forgotPinSendOtp: (data: ForgotPinSendOtpRequest) => apiClient.post('/api/auth/forgot-pin/send-otp', data),  // ✅ Fixed
+  forgotPinVerify: (data: ForgotPinVerifyRequest) => apiClient.post('/api/auth/forgot-pin/verify', data),  // ✅ Fixed
+  logout: () => apiClient.post('/api/auth/logout'),  // ✅ Fixed
+  refreshToken: (refreshToken: string) => apiClient.post('/api/auth/refresh', { refreshToken }),  // ✅ Fixed
 };
