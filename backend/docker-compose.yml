@@ -1,0 +1,55 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: snappay-postgres
+    environment:
+      POSTGRES_USER: snappay
+      POSTGRES_PASSWORD: snappay123
+      POSTGRES_DB: snappay
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - snappay-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: snappay-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - snappay-network
+
+  backend:
+    build: .
+    container_name: snappay-backend
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://snappay:snappay123@postgres:5432/snappay
+      REDIS_URL: redis://redis:6379
+      JWT_SECRET: ${JWT_SECRET}
+      FRONTEND_URL: http://localhost:5173
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - snappay-network
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  snappay-network:
+    driver: bridge

@@ -1,0 +1,90 @@
+openapi: 3.0.0
+info:
+  title: SnapPay API
+  description: Family Payment Platform API
+  version: 1.0.0
+  contact:
+    name: SnapPay Support
+    email: support@snappay.com
+servers:
+  - url: http://localhost:5000/api
+    description: Development server
+  - url: https://api.snappay.com/api
+    description: Production server
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: string }
+        phone: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role: { type: string, enum: ['PRIMARY', 'LINKED'] }
+        status: { type: string, enum: ['ACTIVE', 'PAUSED', 'BLOCKED'] }
+        walletBalance: { type: number }
+    Error:
+      type: object
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string }
+    Pagination:
+      type: object
+      properties:
+        page: { type: integer }
+        limit: { type: integer }
+        total: { type: integer }
+        pages: { type: integer }
+        hasNext: { type: boolean }
+        hasPrev: { type: boolean }
+tags:
+  - name: Auth
+    description: Authentication endpoints
+  - name: Users
+    description: User management
+  - name: Banks
+    description: Bank account management
+  - name: Wallet
+    description: Wallet operations
+  - name: Payments
+    description: Payment processing
+  - name: Family
+    description: Family account management
+  - name: Recharge
+    description: Recharge and bill payments
+  - name: Notifications
+    description: Push notifications
+paths:
+  /auth/send-otp:
+    post:
+      tags: [Auth]
+      summary: Send OTP to phone number
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [phone]
+              properties:
+                phone: { type: string, example: "9876543210" }
+      responses:
+        200:
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success: { type: boolean, example: true }
+                  message: { type: string }
+  # ... (more paths would be documented)

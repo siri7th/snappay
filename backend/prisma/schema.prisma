@@ -1,0 +1,307 @@
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // Make sure this matches your actual DB (PostgreSQL/MySQL). SQLite doesn't fully support Decimals without issues.
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELS
+// ============================================
+
+model User {
+  id                 String    @id @default(cuid())
+  
+  // Contact
+  phone              String    @unique
+  email              String?   @unique
+  
+  // Personal Information
+  name               String?
+  dateOfBirth        DateTime?
+  gender             String?   // "MALE", "FEMALE", "OTHER", "PREFER_NOT_TO_SAY"
+  address            String?
+  city               String?
+  state              String?
+  pincode            String?
+  country            String?   @default("IN")
+  
+  // KYC/Verification
+  aadharNumber       String?   @unique
+  panNumber          String?   @unique
+  isKycVerified      Boolean   @default(false)
+  kycVerifiedAt      DateTime?
+  kycRejectionReason String?
+  emailVerified      Boolean   @default(false)
+  phoneVerified      Boolean   @default(true)
+  emailVerifiedAt    DateTime?
+  phoneVerifiedAt    DateTime?
+  
+  // Account
+  role               String    // "PRIMARY", "LINKED"
+  status             String    @default("ACTIVE") // "ACTIVE", "PAUSED", "BLOCKED", "PENDING"
+  
+  // Family Role
+  familyRole         String?   // "HEAD", "MEMBER", "GUARDIAN"
+  joinedFamilyAt     DateTime?
+  
+  // Security
+  pin                String?   // Hashed PIN
+  avatar             String?
+  lastLoginAt        DateTime?
+  failedLoginAttempts Int      @default(0)
+  lockedUntil        DateTime?
+  lastPasswordChange DateTime?
+  twoFactorEnabled   Boolean   @default(false)
+  twoFactorSecret    String?
+  
+  // Device & Risk
+  lastLoginIp        String?
+  lastLoginDevice    String?
+  riskScore          Float?    // Risk score can remain Float as it's not actual currency
+  isFraudulent       Boolean   @default(false)
+  fraudReason        String?
+  fraudReportedAt    DateTime?
+  
+  // Preferences
+  language           String?   @default("en")
+  profileComplete    Boolean   @default(false)
+  preferences        String?   // JSON string
+  
+  // Timestamps
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  // Relations
+  wallet              Wallet?
+  banks               BankAccount[]
+  primaryFamily       FamilyMember[]          @relation("PrimaryToFamily")
+  linkedFamily        FamilyMember?           @relation("LinkedToFamily")
+  sentRequests        LimitRequest[]          @relation("RequesterRequests")
+  receivedRequests    LimitRequest[]          @relation("ApproverRequests")
+  notifications       Notification[]
+  sentPayments        Transaction[]           @relation("SenderPayments")
+  receivedPayments    Transaction[]           @relation("ReceiverPayments")
+  recharges           Recharge[]
+  sentInvitations     Invitation[]            @relation("SentInvitations")
+  receivedInvitations Invitation[]        @relation("ReceivedInvitations")
+  
+  @@index([phone])
+  @@index([email])
+  @@index([aadharNumber])
+  @@index([panNumber])
+  @@index([role])
+  @@index([status])
+  @@index([isKycVerified])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Wallet {
+  id         String    @id @default(cuid())
+  balance    Decimal   @default(0.00) @db.Decimal(10, 2) // Switched to Decimal
+  userId     String    @unique
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  transactions Transaction[]
+
+  @@map("wallets")
+}
+
+model BankAccount {
+  id            String    @id @default(cuid())
+  bankName      String
+  accountNumber String    @unique
+  ifscCode      String
+  accountHolder String
+  balance       Decimal   @default(0.00) @db.Decimal(10, 2) // Switched to Decimal
+  isDefault     Boolean   @default(false)
+  isVerified    Boolean   @default(false)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  transactions Transaction[]
+
+  @@unique([accountNumber, ifscCode])
+  @@index([userId])
+  @@index([isDefault])
+  @@map("bank_accounts")
+}
+
+model FamilyMember {
+  id                  String    @id @default(cuid())
+  primaryId           String
+  linkedId            String    @unique
+  relationship        String?
+  dailyLimit          Decimal   @default(500.00) @db.Decimal(10, 2)
+  monthlyLimit        Decimal   @default(5000.00) @db.Decimal(10, 2)
+  perTransactionLimit Decimal   @default(200.00) @db.Decimal(10, 2)
+  dailySpent          Decimal   @default(0.00) @db.Decimal(10, 2)
+  monthlySpent        Decimal   @default(0.00) @db.Decimal(10, 2)
+  lastResetDate       DateTime  @default(now())
+  permissions         String    @default("{\"sendMoney\":true,\"scanPay\":true,\"recharge\":true,\"viewHistory\":true}")
+  status              String    @default("PENDING") // PENDING, ACTIVE, PAUSED, REMOVED
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  primary             User      @relation("PrimaryToFamily", fields: [primaryId], references: [id], onDelete: Cascade)
+  linked              User      @relation("LinkedToFamily", fields: [linkedId], references: [id], onDelete: Cascade)
+  requests            LimitRequest[]
+  transactions        Transaction[]
+
+  @@unique([primaryId, linkedId])
+  @@index([primaryId])
+  @@index([linkedId])
+  @@index([status])
+  @@map("family_members")
+}
+
+model Invitation {
+  id                  String    @id @default(cuid())
+  inviteCode          String    @unique
+  primaryId           String
+  invitedPhone        String
+  invitedUserId       String?
+  relationship        String?
+  dailyLimit          Decimal   @default(500.00) @db.Decimal(10, 2)
+  monthlyLimit        Decimal   @default(5000.00) @db.Decimal(10, 2)
+  perTransactionLimit Decimal   @default(200.00) @db.Decimal(10, 2)
+  message             String?
+  status              String    @default("PENDING") // PENDING, ACCEPTED, REJECTED, EXPIRED, CANCELLED
+  expiresAt           DateTime
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+  acceptedAt          DateTime?
+  
+  primary             User      @relation("SentInvitations", fields: [primaryId], references: [id], onDelete: Cascade)
+  invitedUser         User?     @relation("ReceivedInvitations", fields: [invitedUserId], references: [id], onDelete: SetNull)
+
+  @@unique([primaryId, invitedPhone])
+  @@index([inviteCode])
+  @@index([invitedPhone])
+  @@index([status])
+  @@index([expiresAt])
+  @@index([createdAt])
+  @@map("invitations")
+}
+
+model LimitRequest {
+  id              String    @id @default(cuid())
+  familyMemberId  String
+  requesterId     String
+  approverId      String
+  amount          Decimal   @db.Decimal(10, 2)
+  reason          String?
+  duration        String    @default("today") // today, week, month, permanent
+  status          String    @default("PENDING") // PENDING, APPROVED, DENIED, CANCELLED
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  respondedAt     DateTime?
+  
+  familyMember    FamilyMember @relation(fields: [familyMemberId], references: [id], onDelete: Cascade)
+  requester       User      @relation("RequesterRequests", fields: [requesterId], references: [id], onDelete: Cascade)
+  approver        User      @relation("ApproverRequests", fields: [approverId], references: [id], onDelete: Cascade)
+
+  @@index([familyMemberId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("limit_requests")
+}
+
+model Transaction {
+  id              String    @id @default(cuid())
+  transactionId   String    @unique
+  amount          Decimal   @db.Decimal(10, 2)
+  type            String    // SEND, RECEIVE, RECHARGE, ADD_TO_WALLET, etc.
+  status          String    @default("PENDING") // PENDING, SUCCESS, FAILED, REFUNDED
+  senderId        String?
+  receiverId      String?
+  walletId        String?
+  bankId          String?
+  familyMemberId  String?
+  description     String?
+  paymentMethod   String    @default("wallet") // wallet, bank, upi, qr, system
+  reference       String?
+  metadata        String?   // JSON string
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  completedAt     DateTime?
+  
+  sender          User?         @relation("SenderPayments", fields: [senderId], references: [id], onDelete: SetNull)
+  receiver        User?         @relation("ReceiverPayments", fields: [receiverId], references: [id], onDelete: SetNull)
+  wallet          Wallet?       @relation(fields: [walletId], references: [id], onDelete: SetNull)
+  bank            BankAccount?  @relation(fields: [bankId], references: [id], onDelete: SetNull)
+  familyMember    FamilyMember? @relation(fields: [familyMemberId], references: [id], onDelete: SetNull)
+
+  @@index([senderId])
+  @@index([receiverId])
+  @@index([transactionId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("transactions")
+}
+
+model Recharge {
+  id              String    @id @default(cuid())
+  transactionId   String    @unique
+  type            String    // MOBILE, ELECTRICITY, FASTAG, DTH, GAS, WATER
+  operator        String?
+  accountNumber   String
+  amount          Decimal   @db.Decimal(10, 2)
+  status          String    @default("PENDING") // PENDING, SUCCESS, FAILED
+  userId          String
+  metadata        String?   // JSON string
+  createdAt       DateTime  @default(now())
+  completedAt     DateTime?
+  
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@map("recharges")
+}
+
+model Notification {
+  id              String    @id @default(cuid())
+  userId          String
+  type            String    // PAYMENT_SUCCESS, LIMIT_REQUEST, FAMILY_INVITATION, etc.
+  title           String
+  message         String
+  data            String?   // JSON string
+  isRead          Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+model OTP {
+  id         String   @id @default(cuid())
+  phone      String
+  code       String
+  purpose    String   // login, verify_bank, reset_pin, invite, disconnect, remove_account
+  expiresAt  DateTime
+  isUsed     Boolean  @default(false)
+  attempts   Int      @default(0)
+  createdAt  DateTime @default(now())
+  usedAt     DateTime?
+
+  @@index([phone])
+  @@index([code])
+  @@index([expiresAt])
+  @@index([isUsed])
+  @@map("otps")
+}
