@@ -1,5 +1,8 @@
 {
   "devDependencies": {
     "vite-plugin-checker": "^0.12.0"
+  },
+  "dependencies": {
+    "tailwind-merge": "^3.5.0"
   }
 }
