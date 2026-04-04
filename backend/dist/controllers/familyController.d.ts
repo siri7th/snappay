@@ -1,0 +1,31 @@
+declare const _default: {
+    inviteMember: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    generateInviteCode: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getPendingInvitations: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getInvitationByCode: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    acceptInvitationById: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    acceptInvitationByCode: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    rejectInvitation: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    cancelInvitation: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    createLimitRequest: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getRequests: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    approveRequest: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    denyRequest: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getPendingAll: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    generateQRCode: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getFamilyMembers: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getMemberById: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    updateLimits: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    addToLimit: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    pauseMember: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    resumeMember: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    removeMember: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getMemberTransactions: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getMyPrimaryDetails: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    getMyLimits: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    connectToPrimary: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+    acceptConnectionRequest: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+};
+export default _default;
+import { Request, Response, NextFunction } from 'express';
+//# sourceMappingURL=familyController.d.ts.map

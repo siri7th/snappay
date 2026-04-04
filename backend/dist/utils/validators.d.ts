@@ -1,0 +1,37 @@
+import { USER_ROLES, USER_STATUS, FAMILY_MEMBER_STATUS, INVITATION_STATUS, TRANSACTION_TYPES, TRANSACTION_STATUS, PAYMENT_METHODS, RECHARGE_TYPES, NOTIFICATION_TYPES, OTP_PURPOSES, LIMIT_REQUEST_DURATION } from './constants';
+export declare const validatePhone: (phone: string) => boolean;
+export declare const validateEmail: (email: string) => boolean;
+export declare const validatePIN: (pin: string) => boolean;
+export declare const validateAmount: (amount: number) => boolean;
+export declare const validateIFSC: (ifsc: string) => boolean;
+export declare const validateAccountNumber: (accNo: string) => boolean;
+export declare const validateUPIId: (upiId: string) => boolean;
+export declare const validateName: (name: string) => boolean;
+export declare const validatePage: (page: any) => number;
+export declare const validateLimit: (limit: any) => number;
+export declare const validateDateRange: (startDate?: string, endDate?: string) => {
+    start: Date;
+    end: Date;
+};
+export declare const validateUserRole: (role: string) => role is (typeof USER_ROLES)[keyof typeof USER_ROLES];
+export declare const validateUserStatus: (status: string) => status is (typeof USER_STATUS)[keyof typeof USER_STATUS];
+export declare const validateFamilyMemberStatus: (status: string) => status is (typeof FAMILY_MEMBER_STATUS)[keyof typeof FAMILY_MEMBER_STATUS];
+export declare const validateInvitationStatus: (status: string) => status is (typeof INVITATION_STATUS)[keyof typeof INVITATION_STATUS];
+export declare const validateTransactionType: (type: string) => type is (typeof TRANSACTION_TYPES)[keyof typeof TRANSACTION_TYPES];
+export declare const validateTransactionStatus: (status: string) => status is (typeof TRANSACTION_STATUS)[keyof typeof TRANSACTION_STATUS];
+export declare const validatePaymentMethod: (method: string) => method is (typeof PAYMENT_METHODS)[keyof typeof PAYMENT_METHODS];
+export declare const validateRechargeType: (type: string) => type is (typeof RECHARGE_TYPES)[keyof typeof RECHARGE_TYPES];
+export declare const validateNotificationType: (type: string) => type is (typeof NOTIFICATION_TYPES)[keyof typeof NOTIFICATION_TYPES];
+export declare const validateOTPPurpose: (purpose: string) => purpose is (typeof OTP_PURPOSES)[keyof typeof OTP_PURPOSES];
+export declare const validateLimitRequestDuration: (duration: string) => duration is (typeof LIMIT_REQUEST_DURATION)[keyof typeof LIMIT_REQUEST_DURATION];
+export declare const validateEnum: <T extends Record<string, string>>(value: string, enumObj: T) => value is T[keyof T];
+export declare const assertRequired: (value: any, field: string) => void;
+export declare const assertLength: (value: string, min: number, max: number, field: string) => void;
+export declare const assertPhone: (phone: string) => void;
+export declare const assertEmail: (email: string) => void;
+export declare const assertPIN: (pin: string) => void;
+export declare const assertAmount: (amount: number) => void;
+export declare const assertIFSC: (ifsc: string) => void;
+export declare const assertAccountNumber: (accNo: string) => void;
+export declare const assertUPIId: (upiId: string) => void;
+//# sourceMappingURL=validators.d.ts.map
