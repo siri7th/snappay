@@ -36,7 +36,7 @@ const STORAGE_KEYS = {
 // ===== BASE URL DETECTION =====
 const getBaseUrl = (): string => {
   if (import.meta.env.VITE_API_URL) {
-    return import.meta.env.VITE_API_URL;
+    return import.meta.env.VITE_API_URL + "/api";
   }
   
   const hostname = window.location.hostname;
